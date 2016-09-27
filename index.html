@@ -1,0 +1,75 @@
+<link href="http://statics.1024tools.com/css/markdown/github.css" rel="stylesheet" />
+<h1 id="tinymonit">tinymonit</h1>
+<p><a href="https://travis-ci.org/hardog/tinymonit"><img src="https://travis-ci.org/hardog/tinymonit.svg?branch=master" alt="Build Status"></a>
+<a href="https://codecov.io/github/hardog/tinymonit?branch=master"><img src="https://img.shields.io/codecov/c/github/hardog/tinymonit.svg" alt="Coverage Status"></a>
+<a href="https://www.npmjs.com/package/tinymonit"><img src="https://img.shields.io/npm/l/tinymonit.svg" alt="License"></a>
+<a href="https://www.npmjs.com/package/tinymonit"><img src="https://img.shields.io/npm/v/tinymonit.svg" alt="npm Version"></a></p>
+<p>collect the cpu &amp; mem information from the specified machine(remote or local), supports cluster mode which gather all stats from config list!</p>
+<h1 id="feature-list">Feature list</h1>
+<ul>
+<li>promisify function</li>
+<li>gather system cpu usage</li>
+<li>gather system mem usage</li>
+<li>gather specified process cpu &amp; mem usage</li>
+<li>judge if over the threshold</li>
+<li>support cluster mode</li>
+</ul>
+<h1 id="install">Install</h1>
+<p><code>$ npm install tinymonit -g</code></p>
+<h1 id="usage">Usage</h1>
+<h2 id="get-os-stat">Get os stat</h2>
+<pre><code>const tm = require(&#39;tinymonit&#39;);
+const osstat = tm.osstat;
+
+Promise.resolve()
+.then(() =&gt; osstat([8122]))
+.then((stat) =&gt; console.log(r));
+</code></pre><h2 id="create-a-part">create a part</h2>
+<pre><code>const Part = require(&#39;tinymonit&#39;).part;
+
+let part = new Part(3000, {
+    timeout: 100,
+    pid: process.pid // this is defalut
+});
+</code></pre><h2 id="create-a-central">create a central</h2>
+<pre><code>const Central = require(&#39;tinymonit&#39;).central;
+
+let ctl = new Central({
+    timeout: 100,
+    parts:[
+        3000,
+        [3001, 200]
+        //&#39;[remote ip]:[port]&#39;
+    ]
+});
+
+// start collect performance data from 3000, 3001
+Promise.resolve()
+.then(() =&gt; ctl.collect())
+.then((allstats) =&gt; {
+    // do sth
+});
+</code></pre><h2 id="alarm-when-over-threshold-from-cpu-mem-etc-">alarm when over threshold from cpu, mem etc.</h2>
+<pre><code>const tm = require(&#39;tinymonit&#39;);
+const pid = process.pid;
+const osstat = tm.osstat;
+const alarm = tm.alarm;
+
+Promise.resolve()
+.then(() =&gt; osstat([pid]))
+.then((stat) =&gt; {
+    console.log(alarm.should_cpu_alarm(rstat, 1));
+    console.log(alarm.should_mem_alarm(stat));
+    console.log(alarm.should_load_alarm(stat));
+    console.log(alarm.should_procs_alarm(stat, 2));
+});
+</code></pre><h2 id="examples">Examples</h2>
+<ul>
+<li><a href="./example/proc_stat.js">get process stat</a></li>
+<li><a href="./example/sys_stat.js">get system stat</a></li>
+<li><a href="./example/threshold.js">use alarm</a></li>
+<li><a href="./example/cluster">cluster mode</a></li>
+</ul>
+<p>if you wanna debug, just execute <code>$ DEBUG=* node example.js</code> to enable debug.</p>
+<h2 id="license">License</h2>
+<p>MIT</p>
